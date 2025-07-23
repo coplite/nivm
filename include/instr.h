@@ -1,15 +1,14 @@
 #pragma once
 #include "common.h"
 
-
 typedef enum{
+    TYPE_NIL,
     TYPE_STR,
     TYPE_INT,
     TYPE_FLT,
     TYPE_ADRS,
     TYPE_CHR,
     TYPE_BOOL,
-    TYPE_NIL,
     TYPE_ERROR,
 } ValueType;
 
@@ -23,7 +22,7 @@ typedef struct{                 // im using dynamically typed shit so ig u can c
     ValueType value_type;
     union{
         String*     type_str;
-        int32_t     type_int;
+        int64_t     type_int;
         float       type_flt;
         bool        type_bool;
         char        type_chr;
@@ -51,7 +50,6 @@ typedef struct{
     uint8_t*    code;
     ConstsArray constants;
 }OpArray;
-
 
 typedef enum{
     OP_SYSCALL,     // this opcode will be decoded into asm opcodes and be fed into a string that will execute via fn pointers

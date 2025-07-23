@@ -27,8 +27,11 @@ Value       pop(VM* vMachine);
 Value       peak_stack(VM* vMachine, int32_t distance);
 vmResult    interpret(VM* vMachine, OpArray* instructionParcel);
 vmResult    run(VM* vMachine);
+int64_t     syscall_exec(uint64_t SSN, Value arg1, Value arg2, Value arg3, Value arg4, Value arg5, Value arg6);
+uint64_t    resolve_type(Value val);
 
-void register_mov(VM* vMachine);
+void        register_mov(VM* vMachine);
+
 
 // IF you wanna use but i personally dont think these should be used as helper macros
 

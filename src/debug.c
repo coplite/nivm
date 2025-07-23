@@ -18,7 +18,7 @@ void print_ValueStruct(Value* val, VM* vMachine){
             break;
         }
         case TYPE_INT:{
-           printf("%d", val->as.type_int);
+           printf("%lld", val->as.type_int);
            break;
         }
         case TYPE_STR:{
@@ -261,7 +261,11 @@ size_t disassemmble_ins(OpArray* insArry, size_t offset, VM* vMachine){
         case OP_EVAL:{
             uint8_t operand = *(insArry->code + offset + 1);
             printf("OP_EVAL %s\n", fn_names[operand]);
-            return offset + 1 + 1;
+            return offset + 1 + 1 + 2;
+        }
+        case OP_SYSCALL:{
+            puts("OP_SYSCALL");
+            return offset + 1;
         }
         default:{
             printf("[-] UNKNOWN OPCODE OR POSSIBLE OPERAND: %d\n", instruction);

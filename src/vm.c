@@ -6,6 +6,43 @@
 
 extern void(*FnPtrs[])(VM*);
 
+uint64_t resolve_type(Value val){
+    switch(val.value_type){
+        case TYPE_BOOL: return (uint64_t)(int64_t)(val.as.type_bool);   // according to chatgpt youre supposed cast from int64 to uint64 to preserve signed bits
+        case TYPE_CHR:  return (uint64_t)(int64_t)(val.as.type_chr);
+        case TYPE_ADRS: return (uint64_t)(uintptr_t)(val.as.type_addrs);
+        case TYPE_INT:  return (uint64_t)(int64_t)(val.as.type_int);
+        case TYPE_STR:  return (uint64_t)(uintptr_t)(val.as.type_str->chars);
+        default:        return (uint64_t)(0);
+    }
+}
+
+int64_t syscall_exec(uint64_t SSN, Value arg1, Value arg2, Value arg3, Value arg4, Value arg5, Value arg6){
+    int64_t ret = 0;
+    uint64_t a1 = resolve_type(arg1);
+    uint64_t a2 = resolve_type(arg2);
+    uint64_t a3 = resolve_type(arg3);
+    uint64_t a4 = resolve_type(arg4);
+    uint64_t a5 = resolve_type(arg5);
+    uint64_t a6 = resolve_type(arg6);
+
+    __asm__ volatile (
+        "mov x16, %[SSN]\n"
+        "mov x0, %[arg1]\n"
+        "mov x1, %[arg2]\n"
+        "mov x2, %[arg3]\n"
+        "mov x3, %[arg4]\n"
+        "mov x4, %[arg5]\n"
+        "mov x5, %[arg6]\n"
+        "svc #0\n"
+        "mov %[ret], x0\n"
+        :   [ret] "=r"(ret)
+        :   [SSN] "r"(SSN), [arg1] "r"(a1), [arg2] "r"(a2), [arg3] "r"(a3), [arg4] "r"(a4),  [arg5] "r"(a5), [arg6] "r"(a6)
+        :   "x0", "x1", "x2", "x3", "x4", "x5", "x16"
+    );
+    return ret;
+}
+
 void throw_error(VM* vMachine, const char* instruction, const char* reason){
     int32_t loc = (int32_t)(vMachine->instructionPointer - vMachine->CtxSet->code); // maybe add another parameter to subtract so the offset can point to the correct opcode
     printf("\t\\__[%04d\t ERROR WITH INSTRUCTION: %s]\n\t |_REASON: %s\n", loc, instruction, reason);   // improve logging
@@ -27,6 +64,7 @@ void clear_stack(VM* vMachine){
    return;
 }
 void init_vm(VM* vMachine){
+    memset(vMachine->Pop_Storage, 0, sizeof(vMachine->Pop_Storage));
     clear_stack(vMachine);
     vMachine->head = NULL;
     return;
@@ -112,6 +150,12 @@ vmResult run(VM* vMachine){
     DISPATCH();
 
     OP_SYSCALL:{
+        int64_t retval = syscall_exec((uint64_t)vMachine->Pop_Storage[0].as.type_int, vMachine->Pop_Storage[1], vMachine->Pop_Storage[2], vMachine->Pop_Storage[3], vMachine->Pop_Storage[4], vMachine->Pop_Storage[5], vMachine->Pop_Storage[6]);
+        Value val = {
+            .value_type = TYPE_INT,
+            .as.type_int = retval,
+        };
+        push(vMachine, val);
         DISPATCH();
     }
     OP_RESOLVE_SSN:{

@@ -19,7 +19,7 @@
     6. optimization
         --> add register operations
         --> threaded interpreter
-    7. DCUMGATE JIT for indirect syscall stubs
+    7. JIT for indirect syscall stubs
         --> Basically use NtContinue to execute syscalls
             but with JOP chains
 */

@@ -1,2 +1,2 @@
-# StyroVM
+# goonVM
 Basic VM interpreter

@@ -121,7 +121,7 @@ int main(int argc, char** argv){
 
     Value arg1 = {
         .value_type = TYPE_STR,
-        .as.type_str = create_string("ammaslut.txt", 12, &VirtualMachine.head),
+        .as.type_str = create_string("gamaggut.txt", 12, &VirtualMachine.head),
     };
 
     const_idx = add_constant(&code, arg1);
@@ -172,7 +172,7 @@ int main(int argc, char** argv){
     write_operands(&code, const_idx, sizeof(uint32_t));
 
     arg2.value_type = TYPE_STR;
-    arg2.as.type_str = create_string("Holy fuk you cuk!!\n", 19, &VirtualMachine.head);
+    arg2.as.type_str = create_string("Hxxy xxx yxxduck!!\n", 19, &VirtualMachine.head);
     const_idx = add_constant(&code, arg2);
     write_instruction(&code, OP_CONST);
     write_operands(&code, const_idx, sizeof(uint32_t));
